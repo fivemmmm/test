@@ -1,7 +1,7 @@
-import httpInstance from "@/utils/http";
+import request from "@/utils/index";
 
-export function getCateGory() {
-  return httpInstance({
-    url: "home/category/head",
-  });
-}
+// export function getDataId(id) {
+//   return request({
+//     url: `${id}`,
+//   });
+// }

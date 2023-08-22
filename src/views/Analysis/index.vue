@@ -1,9 +1,8 @@
 <script setup>
+import LayoutHeader from "../Layout/components/LayoutHeader.vue";
 import { ref } from "vue";
 
 const value1 = ref(true);
-
-import LayoutHeader from "../Layout/components/LayoutHeader.vue";
 </script>
 <template>
   <LayoutHeader />
@@ -31,7 +30,7 @@ import LayoutHeader from "../Layout/components/LayoutHeader.vue";
     <el-icon size="16"><FullScreen /></el-icon>
     <el-icon size="16"><Picture /></el-icon>
   </div>
-  <div class="tool manager">
+  <div class="tool manager" active-class="active">
     <el-icon @click="fck"><Search /></el-icon>
   </div>
 </template>
@@ -61,6 +60,11 @@ import LayoutHeader from "../Layout/components/LayoutHeader.vue";
 }
 .manager {
   height: 40px;
+  &:hover {
+    color: $xtxColor;
+    border-radius: 20px;
+    background-color: #b52727;
+  }
   .active {
     color: $xtxColor;
     border-radius: 20px;

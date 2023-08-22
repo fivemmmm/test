@@ -1,4 +1,14 @@
-<script setup></script>
+<script setup>
+import { onMounted, ref } from "vue";
+import { search } from "./apis/search";
+const list = ref([]);
+const useData = async (id = 1) => {
+  const res = await search(id);
+  list.value = res.data;
+  // console.log(list);
+};
+onMounted(() => useData());
+</script>
 
 <template>
   <!-- 一级路由出口组件 -->
@@ -7,6 +17,12 @@
 </template>
 
 <style scoped lang="scss">
+html,
+body {
+  padding: 0;
+  width: 100%;
+  min-height: 100px;
+}
 .test {
   color: $priceColor;
 }

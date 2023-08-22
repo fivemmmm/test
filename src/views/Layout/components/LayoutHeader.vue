@@ -8,11 +8,17 @@
       </h1>
       <ul class="app-header-nav">
         <li class="home">
-          <RouterLink to="/Query">水质查询</RouterLink>
+          <RouterLink active-class="active" to="/Query">水质查询</RouterLink>
         </li>
-        <li><RouterLink to="/Analysis">水质分析</RouterLink></li>
-        <li><RouterLink to="/Evaluate">水质评价</RouterLink></li>
-        <li><RouterLink to="/Manager">数据管理</RouterLink></li>
+        <li>
+          <RouterLink active-class="active" to="/Analysis">水质分析</RouterLink>
+        </li>
+        <li>
+          <RouterLink active-class="active" to="/Evaluate">水质评价</RouterLink>
+        </li>
+        <li>
+          <RouterLink active-class="active" to="/Manager">数据管理</RouterLink>
+        </li>
       </ul>
       <ul class="search">
         <li>

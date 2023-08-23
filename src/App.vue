@@ -1,22 +1,31 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import { search } from "./apis/search";
-const list = ref([]);
-const useData = async (id = 1) => {
-  const res = await search(id);
-  list.value = res.data;
-  // console.log(list);
-};
-onMounted(() => useData());
+import { ref, onMounted } from "vue";
+let list11 = ref([1, 2, 3]);
+console.log(list11, "list");
+console.log("list11.value.length", list11.value.length);
+for (let i = 0; i < list11.value.length; i++) {
+  console.log(list11.value[i]);
+}
 </script>
 
 <template>
   <!-- 一级路由出口组件 -->
   <RouterView />
+
   <div class="test">test scss</div>
 </template>
 
 <style scoped lang="scss">
+.search {
+  height: 300px;
+  width: 300px;
+  position: absolute;
+
+  right: 500px;
+  .point {
+    background-color: #b2b2b2;
+  }
+}
 html,
 body {
   padding: 0;

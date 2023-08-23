@@ -19,11 +19,11 @@ export function useTownshipList() {
     };
     let arr1 = unique(townshipList.value);
     townshipList.value = arr1;
-    console.log(townshipList);
-    console.log(townshipList.value.length);
-    for (let i = 0; i < townshipList.value.length; i++) {
-      console.log(townshipList.value[i]);
-    }
+    // console.log(townshipList);
+    // console.log(townshipList.value.length);
+    // for (let i = 0; i < townshipList.value.length; i++) {
+    // console.log(townshipList.value[i]);
+    // }
   };
   onMounted(() => getTownshipList());
   return {

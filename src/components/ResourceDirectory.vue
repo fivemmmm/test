@@ -44,7 +44,8 @@ const data = ref([
     <div>
       <div class="data" v-for="item in data" :key="item.id">
         <div :class="{ show: item.status == true }">{{ item.dataName }}</div>
-        <el-switch v-model="item.status" @change="changeStatus($event, item)" />
+        <!-- <el-switch v-model="item.status" @change="changeStatus($event, item)" /> -->
+        <el-switch v-model="item.status" />
       </div>
     </div>
   </div>
@@ -88,7 +89,6 @@ div {
     text-align: center;
     .el-icon {
       position: relative;
-      top: 5px;
       left: 90px;
     }
   }

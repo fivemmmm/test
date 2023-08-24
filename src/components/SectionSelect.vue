@@ -40,6 +40,7 @@ const townshipName = ref();
 import { getSectionList } from "@/stores/getSectionList";
 const sectionList = ref([]);
 const getSection = async (townshipName) => {
+  riverList.value = [];
   const res = await getSectionList(townshipName);
   sectionList.value = res.sectionList;
 };
@@ -54,26 +55,31 @@ const getRiver = async (townshipName, activeSectionName) => {
 //表格
 import { getQualityList } from "@/stores/getQualityList";
 import { defineEmits } from "vue";
-let qualityList = ref([]);
+const emit = defineEmits(["getQualityData"]);
+const postNull = () => {
+  emit("getQualityData", "");
+};
 const getQuality = async (townshipName, activeSectionName, activeRiverName) => {
   let res = await getQualityList(
     townshipName,
     activeSectionName,
     activeRiverName
   );
-  qualityList.value = res.qualityList.value;
+
+  emit("getQualityData", res);
 };
-const emit = defineEmits(["getQualityData"]);
-const sendQualityList = () => {
-  emit("getQualityData", qualityList);
-};
+
+defineProps({
+  titleName: String,
+  default: () => "cfsf",
+});
 </script>
 
 <template>
   <!-- 站点管理 -->
   <!-- 站点管理图标 -->
   <div
-    class="tool manager"
+    class="manager"
     @click="(isVisible = !isVisible), changeColor(isVisible)"
   >
     <el-icon :size="16"><Search /></el-icon>
@@ -86,14 +92,17 @@ const sendQualityList = () => {
       class="m-2"
       filterable
       placeholder="行政区选择"
-      @click="changeName()"
     >
       <el-option
         v-for="item in townshipList"
         :key="item.Township"
         :label="item.Township"
         :value="item.Township"
-        @click="getSection(townshipName)"
+        @click="
+          changeName();
+          getSection(townshipName);
+          postNull();
+        "
       />
     </el-select>
     断面列表
@@ -109,6 +118,7 @@ const sendQualityList = () => {
           changeSectionColor(item),
             isShow('query'),
             getRiver(townshipName, activeSectionName);
+          postNull();
         "
       >
         {{ item.SectionName }}
@@ -125,8 +135,7 @@ const sendQualityList = () => {
         @click="
           changeRivernColor(item),
             isShow('query'),
-            getQuality(townshipName, activeSectionName, activeRiverName);
-          sendQualityList();
+            getQuality(townshipName, activeSectionName, activeRiverName)
         "
       >
         {{ item.RiverName }}
@@ -136,15 +145,20 @@ const sendQualityList = () => {
   <!-- 查询结果表格 -->
   <div class="query">
     <div class="query-title">
-      {{ townshipName }} {{ activeSectionName }} {{ activeRiverName }}
       <div>
-        <slot name="buttom"></slot>
+        <strong class="title-name">{{ titleName }}</strong> {{ "&nbsp;"
+        }}{{ townshipName }} {{ activeSectionName }} {{ activeRiverName }}
+      </div>
+
+      <div>
+        <slot class="button" name="buttom"></slot>
         <el-icon
           size="20"
           color="#ff0000"
           @click="isHidden('query'), changeName()"
-          ><CircleCloseFilled
-        /></el-icon>
+        >
+          <CircleCloseFilled />
+        </el-icon>
       </div>
     </div>
     <slot name="el-table"></slot>
@@ -161,12 +175,13 @@ div {
   text-align: center;
 }
 
-.tool {
-  height: 120px;
+.manager {
+  height: 40px;
   width: 40px;
-  background-color: #efefef;
+  top: 200px;
+  color: #fff;
   border-radius: 11px;
-  border: 1px solid #bbbbbb;
+  background-color: $xtxColor;
 
   display: flex;
   flex-direction: column;
@@ -176,14 +191,6 @@ div {
   position: absolute;
   right: 20px;
   bottom: 30px;
-}
-.manager {
-  height: 40px;
-
-  border: 0;
-  top: 200px;
-  color: #fff;
-  background-color: $xtxColor;
 }
 .search {
   width: 230px;
@@ -239,7 +246,7 @@ div {
   }
 }
 .query {
-  height: 230px;
+  height: 240px;
   width: 1009px;
   background-color: #efefef;
   border: 1px solid #bbb;
@@ -248,29 +255,33 @@ div {
   position: absolute;
   bottom: 30px;
   right: 70px;
+  .title-name {
+    text-align: left;
+    font-size: 20px;
 
+    display: inline-block;
+  }
   .query-title {
     width: 965px;
     height: 20px;
-    margin: 15px auto 20px;
+    margin: 15px auto 15px;
 
-    justify-content: space-between;
-    text-align: center;
     display: flex;
-  }
-  .el-button {
-    background-color: #0b96f0;
-  }
-  .el-icon {
-    margin: 0 0 0 25px;
+    justify-content: space-between;
+    align-items: center;
 
-    position: absolute;
-    top: 15px;
-    right: 25px;
+    .el-icon {
+      margin: 0 0 0 25px;
+
+      position: relative;
+      top: 5px;
+      right: 5px;
+    }
   }
-  .el-table {
-    margin: 0 auto;
-  }
+  // .el-button {
+  //   background-color: #0b96f0;
+  // }
+
   // 表格内背景颜色
   ::v-deep(.el-table th) {
     background-color: #fafafa; // 背景透明

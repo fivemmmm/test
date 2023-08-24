@@ -1,12 +1,12 @@
 <script setup>
 import LayoutHeader from "../Layout/components/LayoutHeader.vue";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 // 引入导出Excel表格依赖
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
-import axios from "axios";
 import ResourceDirectory from "../../components/ResourceDirectory.vue";
 import SectionSelect from "@/components/SectionSelect.vue";
+import Tool from "@/components/Tool.vue";
 const exportExcel = (name, id) => {
   var wb = XLSX.utils.table_to_book(document.querySelector("#" + id));
   var wbout = XLSX.write(wb, {
@@ -141,99 +141,83 @@ const exportExcel = (name, id) => {
 // axios.get("/cat/1").then((res) => {
 //   console.log(res.data);
 // });
-const qualityData = ref({});
-const getData = async (id = 1) => {
-  const res = await axios.get(`/cat/${id}`);
-  qualityData.value = res.data;
-};
-getData();
-const tableData = [
-  {
-    date: "2016/02",
-    "氨氮(mg/l)": "0.086",
-    "总磷(mg/l)": "0.026",
-    "高锰酸钾(mg/l)": "32",
-    "溶解氧(mg/l)": "7.7",
-    达标情况: "达标",
-  },
-  {
-    date: "2016/04",
-    "氨氮(mg/l)": "0.086",
-    "总磷(mg/l)": "0.026",
-    "高锰酸钾(mg/l)": "32",
-    "溶解氧(mg/l)": "7.7",
-    达标情况: "达标",
-  },
-  {
-    date: "2016/05",
-    "氨氮(mg/l)": "0.086",
-    "总磷(mg/l)": "0.026",
-    "高锰酸钾(mg/l)": "32",
-    "溶解氧(mg/l)": "7.7",
-    达标情况: "达标",
-  },
-  {
-    date: "2016/06",
-    "氨氮(mg/l)": "0.086",
-    "总磷(mg/l)": "0.026",
-    "高锰酸钾(mg/l)": "32",
-    "溶解氧(mg/l)": "7.7",
-    达标情况: "达标",
-  },
-  {
-    date: "2016/07",
-    "氨氮(mg/l)": "0.086",
-    "总磷(mg/l)": "0.026",
-    "高锰酸钾(mg/l)": "32",
-    "溶解氧(mg/l)": "7.7",
-    达标情况: "达标",
-  },
-  {
-    date: "2016/08",
-    "氨氮(mg/l)": "0.086",
-    "总磷(mg/l)": "0.026",
-    "高锰酸钾(mg/l)": "32",
-    "溶解氧(mg/l)": "7.7",
-    达标情况: "达标",
-  },
-  {
-    date: "2016/09",
-    "氨氮(mg/l)": "0.086",
-    "总磷(mg/l)": "0.026",
-    "高锰酸钾(mg/l)": "32",
-    "溶解氧(mg/l)": "7.7",
-    达标情况: "达标",
-  },
-];
-const tableList = ref([]);
-const getQualityList = async (qualityList) => {
-  console.log("tableList", tableList);
+// const qualityData = ref({});
+// const getData = async (id = 1) => {
+//   const res = await axios.get(`/cat/${id}`);
+//   qualityData.value = res.data;
+// };
+// getData();
+// const tableData = [
+//   {
+//     date: "2016/02",
+//     "氨氮(mg/l)": "0.086",
+//     "总磷(mg/l)": "0.026",
+//     "高锰酸钾(mg/l)": "32",
+//     "溶解氧(mg/l)": "7.7",
+//     达标情况: "达标",
+//   },
+//   {
+//     date: "2016/04",
+//     "氨氮(mg/l)": "0.086",
+//     "总磷(mg/l)": "0.026",
+//     "高锰酸钾(mg/l)": "32",
+//     "溶解氧(mg/l)": "7.7",
+//     达标情况: "达标",
+//   },
+//   {
+//     date: "2016/05",
+//     "氨氮(mg/l)": "0.086",
+//     "总磷(mg/l)": "0.026",
+//     "高锰酸钾(mg/l)": "32",
+//     "溶解氧(mg/l)": "7.7",
+//     达标情况: "达标",
+//   },
+//   {
+//     date: "2016/06",
+//     "氨氮(mg/l)": "0.086",
+//     "总磷(mg/l)": "0.026",
+//     "高锰酸钾(mg/l)": "32",
+//     "溶解氧(mg/l)": "7.7",
+//     达标情况: "达标",
+//   },
+//   {
+//     date: "2016/07",
+//     "氨氮(mg/l)": "0.086",
+//     "总磷(mg/l)": "0.026",
+//     "高锰酸钾(mg/l)": "32",
+//     "溶解氧(mg/l)": "7.7",
+//     达标情况: "达标",
+//   },
+//   {
+//     date: "2016/08",
+//     "氨氮(mg/l)": "0.086",
+//     "总磷(mg/l)": "0.026",
+//     "高锰酸钾(mg/l)": "32",
+//     "溶解氧(mg/l)": "7.7",
+//     达标情况: "达标",
+//   },
+//   {
+//     date: "2016/09",
+//     "氨氮(mg/l)": "0.086",
+//     "总磷(mg/l)": "0.026",
+//     "高锰酸钾(mg/l)": "32",
+//     "溶解氧(mg/l)": "7.7",
+//     达标情况: "达标",
+//   },
+// ];
+const qualityList = ref([]);
+const getQualityList = async (res) => {
+  qualityList.value = res.qualityList;
   console.log("qualityList", qualityList);
-  console.log("qualityList.value.length", qualityList.value.length);
-  // tableList.value = qualityList.value;
-  // console.log("tableList", tableList);
-  for (let i = 0; i < qualityList.length; i++) {
-    console.log("tableList.value[i]", qualityList[i]);
+  for (let i = 0; i < qualityList.value.length; i++) {
+    console.log("tableList.value[i]", qualityList.value[i]);
   }
 };
 </script>
 
 <template>
   <LayoutHeader />
-  <el-table
-    id="table"
-    :data="qualityList"
-    stripe
-    style="width: 95%"
-    height="160"
-  >
-    <el-table-column prop="Year" label="时间" />
-    <el-table-column prop="氨氮(mg/l)" label="氨氮(mg/l)" />
-    <el-table-column prop="TotalPhosphorus" label="总磷(mg/l)" />
-    <el-table-column prop="高锰酸钾(mg/l)" label="高锰酸钾(mg/l)" width="162" />
-    <el-table-column prop="溶解氧(mg/l)" label="溶解氧(mg/l)" />
-    <el-table-column prop="达标情况" label="达标情况" />
-  </el-table>
+
   <ResourceDirectory />
 
   <!-- 站点管理 -->
@@ -268,7 +252,7 @@ const getQualityList = async (qualityList) => {
       </div>
     </div>
   </div> -->
-  <SectionSelect @getQualityData="getQualityList">
+  <SectionSelect titleName="属性查询分析" @getQualityData="getQualityList">
     <template v-slot:buttom>
       <el-button
         type="primary"
@@ -280,21 +264,25 @@ const getQualityList = async (qualityList) => {
     <template v-slot:el-table>
       <el-table
         id="table"
-        :data="tableData"
+        :data="qualityList"
         stripe
         style="width: 95%"
-        height="160"
+        height="180"
       >
-        <el-table-column prop="date" label="时间" />
-        <el-table-column prop="氨氮(mg/l)" label="氨氮(mg/l)" />
-        <el-table-column prop="总磷(mg/l)" label="总磷(mg/l)" />
+        <el-table-column label="时间">
+          <template #default="{ row }">
+            {{ row.Year }}/0{{ row.Quarter }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="AmmoniaNitrogen" label="氨氮(mg/l)" />
+        <el-table-column prop="TotalPhosphorus" label="总磷(mg/l)" />
         <el-table-column
-          prop="高锰酸钾(mg/l)"
+          prop="PermanganateIndex"
           label="高锰酸钾(mg/l)"
           width="162"
         />
-        <el-table-column prop="溶解氧(mg/l)" label="溶解氧(mg/l)" />
-        <el-table-column prop="达标情况" label="达标情况" />
+        <el-table-column prop="DissolvedOxygen" label="溶解氧(mg/l)" />
+        <el-table-column prop="ComplianceStatus" label="达标情况" />
       </el-table>
     </template>
   </SectionSelect>
@@ -334,11 +322,12 @@ const getQualityList = async (qualityList) => {
       <el-table-column prop="达标情况" label="达标情况" />
     </el-table>
   </div> -->
-  <div class="tool">
+  <!-- <div class="tool">
     <el-icon size="16"><House /></el-icon>
     <el-icon size="16"><FullScreen /></el-icon>
     <el-icon size="16"><Picture /></el-icon>
-  </div>
+  </div> -->
+  <Tool />
 </template>
 
 <style scoped lang="scss">
@@ -351,22 +340,22 @@ div {
   text-align: center;
 }
 
-.tool {
-  height: 120px;
-  width: 40px;
-  background-color: #efefef;
-  border-radius: 11px;
-  border: 1px solid #bbbbbb;
+// .tool {
+//   height: 120px;
+//   width: 40px;
+//   background-color: #efefef;
+//   border-radius: 11px;
+//   border: 1px solid #bbbbbb;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: space-around;
+//   align-items: center;
 
-  position: absolute;
-  right: 20px;
-  bottom: 30px;
-}
+//   position: absolute;
+//   right: 20px;
+//   bottom: 30px;
+// }
 // .manager {
 //   height: 40px;
 
@@ -449,9 +438,8 @@ div {
 //     display: flex;
 //   }
 .el-button {
-  position: absolute;
-  top: 10px;
-  right: 70px;
+  // position: relative;
+  // right: 70px;
   background-color: #0b96f0;
 }
 // .el-icon {

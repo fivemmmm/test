@@ -1,12 +1,4 @@
-<script setup>
-import { ref, onMounted } from "vue";
-let list11 = ref([1, 2, 3]);
-console.log(list11, "list");
-console.log("list11.value.length", list11.value.length);
-for (let i = 0; i < list11.value.length; i++) {
-  console.log(list11.value[i]);
-}
-</script>
+<script setup></script>
 
 <template>
   <!-- 一级路由出口组件 -->

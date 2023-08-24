@@ -22,18 +22,15 @@
       </ul>
       <ul class="search">
         <li>
-          <RouterLink to="/">管理中心</RouterLink>
+          <RouterLink to="/Query">管理中心</RouterLink>
         </li>
-        <li>
-          <RouterLink to="/">nowDate </RouterLink>
-        </li>
+        <li>nowDate</li>
         <li>
           <el-icon size="14" color="#fff"><UserFilled /></el-icon>
 
-          <RouterLink to="/"> 超级管理员</RouterLink>
+          <RouterLink to="/Query"> 超级管理员</RouterLink>
         </li>
       </ul>
-      <!-- 头部购物车 -->
     </div>
   </header>
 </template>
@@ -94,6 +91,7 @@
     font-size: 14px;
     margin-right: 40px;
     text-align: center;
+    color: #fff;
     li {
       width: 100px;
       display: flex;

@@ -1,74 +1,103 @@
 <script setup>
 import LayoutHeader from "../Layout/components/LayoutHeader.vue";
 import { ref } from "vue";
+// 引入导出Excel表格依赖
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
+import ResourceDirectory from "../../components/ResourceDirectory.vue";
+import SectionSelect from "@/components/SectionSelect.vue";
+import Tool from "@/components/Tool.vue";
+const exportExcel = (name, id) => {
+  var wb = XLSX.utils.table_to_book(document.querySelector("#" + id));
+  var wbout = XLSX.write(wb, {
+    bookType: "xlsx",
+    bookSST: true,
+    type: "array",
+  });
+  try {
+    FileSaver.saveAs(
+      new Blob([wbout], { type: "application/octet-stream" }),
+      name + ".xlsx"
+    );
+  } catch (e) {
+    if (typeof console !== "undefined") console.log(e, wbout);
+  }
+  return wbout;
+};
 
-const value1 = ref(true);
+// 水质查询
+
+const qualityList = ref([]);
+const getQualityList = async (res) => {
+  qualityList.value = res.qualityList;
+};
 </script>
+
 <template>
   <LayoutHeader />
-  <div class="resource-directory">
-    <div class="" style="width: 320px">
-      <div style="height: 34px; display: flex; margin-top: 20px">
-        <div style="position: relative; left: 40%">资源面板</div>
-        <el-icon size="20" color="#F4BF4E" style="position: relative; left: 70%"
-          ><RemoveFilled />
-        </el-icon>
-      </div>
-      <div style="display: flex; justify-content: center">
-        <div
-          style="width: 283px; display: flex; justify-content: space-between"
-        >
-          <div>河流</div>
-          <el-switch v-model="value1" />
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="tool">
+  <ResourceDirectory />
+
+  <!-- 站点管理 -->
+
+  <SectionSelect titleName="水质趋势分析" @getQualityData="getQualityList">
+    <template v-slot:buttom>
+      <el-button
+        type="primary"
+        @click="exportExcel('上兴镇-库中站点水质数据', 'table')"
+      >
+        导出
+      </el-button>
+    </template>
+    <template v-slot:el-table>
+      <el-table
+        id="table"
+        :data="qualityList"
+        stripe
+        style="width: 95%"
+        height="180px"
+      >
+        <el-table-column label="时间">
+          <template #default="{ row }">
+            {{ row.Year }}/0{{ row.Quarter }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="AmmoniaNitrogen" label="氨氮(mg/l)" />
+        <el-table-column prop="TotalPhosphorus" label="总磷(mg/l)" />
+        <el-table-column
+          prop="PermanganateIndex"
+          label="高锰酸钾(mg/l)"
+          width="162"
+        />
+        <el-table-column prop="DissolvedOxygen" label="溶解氧(mg/l)" />
+        <el-table-column prop="ComplianceStatus" label="达标情况" />
+      </el-table>
+    </template>
+  </SectionSelect>
+
+  <!-- <div class="tool">
     <el-icon size="16"><House /></el-icon>
     <el-icon size="16"><FullScreen /></el-icon>
     <el-icon size="16"><Picture /></el-icon>
-  </div>
-  <div class="tool manager" active-class="active">
-    <el-icon @click="fck"><Search /></el-icon>
-  </div>
+  </div> -->
+  <Tool />
 </template>
 
 <style scoped lang="scss">
-.resource-directory {
-  height: 700px;
-  width: 320px;
-  border-radius: 35px;
-  border: 1px solid #bbbbbb;
-  position: absolute;
-  left: 18px;
-  top: 76px;
-  display: flex;
-  justify-content: space-between;
+.active.point {
+  color: #fff;
+  background-color: #0b96f0; // 设置选中状态下的背景色
+  border: 0px solid #000;
 }
-.tool {
-  background-color: #efefef;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  height: 120px;
-  width: 40px;
-  border-radius: 11px;
-  border: 1px solid #bbbbbb;
+div {
+  text-align: center;
 }
-.manager {
-  height: 40px;
-  &:hover {
-    color: $xtxColor;
-    border-radius: 20px;
-    background-color: #b52727;
-  }
-  .active {
-    color: $xtxColor;
-    border-radius: 20px;
-    background-color: #fff;
-  }
+
+.el-button {
+  background-color: #0b96f0;
+}
+
+.el-table {
+  margin: 0 auto;
 }
 </style>

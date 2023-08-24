@@ -208,7 +208,7 @@ const exportExcel = (name, id) => {
 const qualityList = ref([]);
 const getQualityList = async (res) => {
   qualityList.value = res.qualityList;
-  console.log("qualityList", qualityList);
+  console.log("qualityList", qualityList.value.length);
   for (let i = 0; i < qualityList.value.length; i++) {
     console.log("tableList.value[i]", qualityList.value[i]);
   }
@@ -269,10 +269,10 @@ const getQualityList = async (res) => {
         style="width: 95%"
         height="180"
       >
-        <el-table-column label="时间">
-          <template #default="{ row }">
+        <el-table-column prop="Date" label="时间">
+          <!-- <template #default="{ row }">
             {{ row.Year }}/0{{ row.Quarter }}
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column prop="AmmoniaNitrogen" label="氨氮(mg/l)" />
         <el-table-column prop="TotalPhosphorus" label="总磷(mg/l)" />

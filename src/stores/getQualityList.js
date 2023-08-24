@@ -28,11 +28,18 @@ export async function getQualityList(
     })
     .then((res) => {
       qualityList = res.data.data;
+      qualityList = res.data.data.map((item) => {
+        // Add a new key-value pair to each item
+        return {
+          ...item, // Copy existing properties
+          Date: `${item.Year}/0${item.Quarter}`, // Add new key-value pair
+        };
+      });
     });
+
   // 处理响应结果
   // const res = response.data; // 将响应数据保存在变量中
   //   这里您可以对结果进行其他处理或存储操作;
-
   return {
     qualityList,
   };

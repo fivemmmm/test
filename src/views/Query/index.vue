@@ -208,10 +208,10 @@ const exportExcel = (name, id) => {
 const qualityList = ref([]);
 const getQualityList = async (res) => {
   qualityList.value = res.qualityList;
-  console.log("qualityList", qualityList.value.length);
-  for (let i = 0; i < qualityList.value.length; i++) {
-    console.log("tableList.value[i]", qualityList.value[i]);
-  }
+  // console.log("qualityList", qualityList.value.length);
+  // for (let i = 0; i < qualityList.value.length; i++) {
+  //   console.log("tableList.value[i]", qualityList.value[i]);
+  // }
 };
 </script>
 
@@ -267,7 +267,7 @@ const getQualityList = async (res) => {
         :data="qualityList"
         stripe
         style="width: 95%"
-        height="180"
+        height="160"
       >
         <el-table-column prop="Date" label="时间">
           <!-- <template #default="{ row }">
@@ -453,7 +453,7 @@ div {
   margin: 0 auto;
 }
 // 表格内背景颜色
-::v-deep(.el-table th) {
+::v-deep(el-table .th) {
   background-color: #fafafa; // 背景透明
 }
 // }

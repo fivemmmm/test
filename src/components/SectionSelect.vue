@@ -30,6 +30,7 @@ const changeRivernColor = (item) => {
 const changeName = () => {
   activeSectionName.value = "";
   activeRiverName.value = "";
+  year.value = "";
 };
 // 站点管理
 // 获取镇数据列表
@@ -53,17 +54,43 @@ const getRiver = async (townshipName, activeSectionName) => {
   riverList.value = res.riverList;
 };
 //表格
+const year = ref("");
+
+const options = [
+  {
+    value: 2016,
+    label: "2016",
+  },
+  {
+    value: 2017,
+    label: "2017",
+  },
+  {
+    value: 2018,
+    label: "2018",
+  },
+  {
+    value: 2019,
+    label: "2019",
+  },
+];
 import { getQualityList } from "@/stores/getQualityList";
 import { defineEmits } from "vue";
 const emit = defineEmits(["getQualityData"]);
 const postNull = () => {
   emit("getQualityData", "");
 };
-const getQuality = async (townshipName, activeSectionName, activeRiverName) => {
+const getQuality = async (
+  townshipName,
+  activeSectionName,
+  activeRiverName,
+  year
+) => {
   let res = await getQualityList(
     townshipName,
     activeSectionName,
-    activeRiverName
+    activeRiverName,
+    year
   );
 
   emit("getQualityData", res);
@@ -151,6 +178,17 @@ defineProps({
       </div>
 
       <div>
+        <el-select v-model="year" class="m-2" placeholder="检测年份">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+            @click="
+              getQuality(townshipName, activeSectionName, activeRiverName, year)
+            "
+          />
+        </el-select>
         <slot class="button" name="buttom"></slot>
         <el-icon
           size="20"
@@ -252,6 +290,8 @@ div {
   border: 1px solid #bbb;
   border-radius: 35px;
 
+  z-index: 0;
+
   position: absolute;
   bottom: 30px;
   right: 70px;
@@ -264,12 +304,27 @@ div {
   .query-title {
     width: 965px;
     height: 20px;
-    margin: 15px auto 15px;
+    margin: 20px auto;
+
+    z-index: 5;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
-
+    .el-select {
+      margin: 0 25px;
+    }
+    ::v-deep(.el-input.el-input--suffix) {
+      .el-input__inner::placeholder {
+        color: #3f3e3e;
+      }
+      .el-input__wrapper {
+        width: 100px;
+        border-radius: 5px;
+        background-color: #efefef;
+        border: 1px solid #bbbbbb;
+      }
+    }
     .el-icon {
       margin: 0 0 0 25px;
 

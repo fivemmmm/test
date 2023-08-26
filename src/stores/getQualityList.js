@@ -34,6 +34,10 @@ export async function getQualityList(
         return {
           ...item, // Copy existing properties
           Date: `${item.Year}/0${item.Quarter}`, // Add new key-value pair
+          AmmoniaNitrogenStandard: 1,
+          TotalPhosphorusStandard: 0.2,
+          PermanganateIndexStandard: 6,
+          DissolvedOxygenStandard: 5,
         };
       });
     });

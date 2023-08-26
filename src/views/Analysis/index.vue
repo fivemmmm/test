@@ -14,42 +14,46 @@ const option = ref({
     formatter: function (name) {
       if (name === "AmmoniaNitrogen") {
         return "氨氮(mg/l)";
+      } else if (name === "AmmoniaNitrogenStandard") {
+        return "氨氮Ⅲ类水标准";
       } else if (name === "TotalPhosphorus") {
         return "总磷(mg/l)";
+      } else if (name === "TotalPhosphorusStandard") {
+        return "总磷Ⅲ类水标准";
       } else if (name === "PermanganateIndex") {
-        return "高锰酸钾(mg/l)";
+        return "高锰酸盐(mg/l)";
+      } else if (name === "PermanganateIndexStandard") {
+        return "高锰酸盐Ⅲ类水标准";
       } else if (name === "DissolvedOxygen") {
         return "溶解氧(mg/l)";
+      } else if (name === "DissolvedOxygenStandard") {
+        return "溶解氧Ⅲ类水标准";
       }
       return name; // 其他键名保持不变
     },
     left: "left",
-    top: "60px",
+    top: "25px",
     width: "100px",
   },
   grid: {
-    left: "15%",
+    left: "17%",
     right: "2%",
     top: "25%",
     bottom: "10%",
     containLabel: false,
-  },
-  toolbox: {
-    feature: {
-      saveAsImage: {
-        title: "下载",
-      },
-    },
-    left: "70%",
   },
   tooltip: {},
   dataset: {
     dimensions: [
       "Date",
       "AmmoniaNitrogen",
+      "AmmoniaNitrogenStandard",
       "TotalPhosphorus",
+      "TotalPhosphorusStandard",
       "PermanganateIndex",
+      "PermanganateIndexStandard",
       "DissolvedOxygen",
+      "DissolvedOxygenStandard",
     ],
     source: [],
   },
@@ -62,13 +66,16 @@ const option = ref({
     { type: "line" },
     { type: "line" },
     { type: "line" },
+    { type: "line" },
+    { type: "line" },
+    { type: "line" },
+    { type: "line" },
   ],
 });
 
 // const qualityList = ref([]);
 const getQualityList = async (res) => {
   option.value.dataset.source = res.qualityList;
-  console.log(res === "");
   if (res === "") {
     option.value.dataset.source = [];
   }
@@ -83,7 +90,37 @@ const updateChart = () => {
 
 onMounted(() => {
   chart.value = echarts.init(chartContainer.value);
+  const bindingMap = {
+    AmmoniaNitrogen: ["AmmoniaNitrogen", "AmmoniaNitrogenStandard"],
+    AmmoniaNitrogenStandard: ["AmmoniaNitrogen", "AmmoniaNitrogenStandard"],
+    TotalPhosphorus: ["TotalPhosphorus", "TotalPhosphorusStandard"],
+    TotalPhosphorusStandard: ["TotalPhosphorus", "TotalPhosphorusStandard"],
+    PermanganateIndex: ["PermanganateIndex", "PermanganateIndexStandard"],
+    PermanganateIndexStandard: [
+      "PermanganateIndex",
+      "PermanganateIndexStandard",
+    ],
+    DissolvedOxygen: ["DissolvedOxygen", "DissolvedOxygenStandard"],
+    DissolvedOxygenStandard: ["DissolvedOxygen", "DissolvedOxygenStandard"],
+    // ... (other binding relationships if needed)
+  };
   chart.value.setOption(option.value);
+  chart.value.on("legendselectchanged", (params) => {
+    const { selected, name } = params;
+
+    const bindingSeries = bindingMap[name];
+
+    if (bindingSeries) {
+      // Toggle the binding series together
+      bindingSeries.forEach((seriesName) => {
+        selected[seriesName] = selected[name];
+      });
+    }
+
+    chart.value.setOption({
+      legend: { selected },
+    });
+  });
 });
 </script>
 

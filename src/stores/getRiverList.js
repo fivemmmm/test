@@ -1,8 +1,7 @@
-import { ref } from "vue";
 import axios from "axios";
 
 export async function getRiverList(township, sectionName) {
-  const riverList = ref([]);
+  const arr1 = [];
   const queryParams = {
     SectionName: sectionName,
     Township: township,
@@ -15,7 +14,7 @@ export async function getRiverList(township, sectionName) {
   const res = response.data; // 将响应数据保存在变量中
   //   这里您可以对结果进行其他处理或存储操作;
   for (let i = 0; i < res.data.length; i++) {
-    riverList.value.push({
+    arr1.push({
       RiverName: res.data[i].RiverName,
     });
   }
@@ -25,8 +24,7 @@ export async function getRiverList(township, sectionName) {
       (arr) => !res.has(arr.RiverName) && res.set(arr.RiverName, 1)
     );
   };
-  let arr1 = unique(riverList.value);
-  riverList.value = arr1;
+  let riverList = unique(arr1);
   return {
     riverList,
   };

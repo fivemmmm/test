@@ -278,7 +278,7 @@ const getQualityList = async (res) => {
         <el-table-column prop="TotalPhosphorus" label="总磷(mg/l)" />
         <el-table-column
           prop="PermanganateIndex"
-          label="高锰酸钾(mg/l)"
+          label="高锰酸盐(mg/l)"
           width="162"
         />
         <el-table-column prop="DissolvedOxygen" label="溶解氧(mg/l)" />

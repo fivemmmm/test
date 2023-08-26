@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { isHidden } from "@/composables/changeVisible";
 import { isShow } from "@/composables/changeVisible";
 
@@ -34,17 +34,25 @@ const changeName = () => {
 };
 // 站点管理
 // 获取镇数据列表
-import { useTownshipList } from "@/stores/getTownshipList";
-const { townshipList } = useTownshipList();
+import { getTownshipList } from "@/stores/getTownshipList";
+const townshipList = ref([]);
+const getTownship = async () => {
+  const res = await getTownshipList();
+  townshipList.value = res.townshipList;
+};
+
+onMounted(() => getTownship());
 const townshipName = ref();
 // 获取断点数据列表
 import { getSectionList } from "@/stores/getSectionList";
 const sectionList = ref([]);
 const getSection = async (townshipName) => {
+  sectionList.value = [];
   riverList.value = [];
   const res = await getSectionList(townshipName);
   sectionList.value = res.sectionList;
 };
+
 //获取河流名称
 import { getRiverList } from "@/stores/getRiverList";
 
@@ -57,6 +65,10 @@ const getRiver = async (townshipName, activeSectionName) => {
 const year = ref("");
 
 const options = [
+  {
+    value: null,
+    label: "全部年份",
+  },
   {
     value: 2016,
     label: "2016",
@@ -138,7 +150,7 @@ defineProps({
         class="point"
         :class="{ active: item.SectionName == activeSectionName }"
         :style="{ backgroundColor: item.color }"
-        v-for="item in sectionList.value"
+        v-for="item in sectionList"
         :key="item.SectionName"
         @click="
           changeName();
@@ -157,7 +169,7 @@ defineProps({
         class="point"
         :class="{ active: item.RiverName == activeRiverName }"
         :style="{ backgroundColor: item.color }"
-        v-for="item in riverList.value"
+        v-for="item in riverList"
         :key="item.RiverName"
         @click="
           changeRivernColor(item),

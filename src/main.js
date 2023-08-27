@@ -24,3 +24,8 @@ app.mount("#app");
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
 }
+
+import zhCn from "element-plus/es/locale/lang/zh-cn";
+
+// 修改分页器默认文字
+zhCn.el.pagination.total = "总共：" + `{total}` + "条";

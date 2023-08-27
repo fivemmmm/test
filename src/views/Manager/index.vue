@@ -47,14 +47,43 @@ const getRiver = async () => {
   });
 };
 
-onMounted(() => {
-  changeActiveList(radio1.value);
-});
-
 const activeName = ref("");
 const changeName = (item) => {
   activeName.value = item;
   console.log(activeName);
+};
+
+import { getQualityList } from "@/stores/getQualityList";
+
+const getQuality = async (
+  townshipName,
+  activeSectionName,
+  activeRiverName,
+  year
+) => {
+  let res = await getQualityList(
+    townshipName,
+    activeSectionName,
+    activeRiverName,
+    year
+  );
+  return res;
+};
+
+const qualityList = ref([]);
+onMounted(() => {
+  changeActiveList(radio1.value);
+  getQuality().then((result) => {
+    const res = result;
+    qualityList.value = res.qualityList;
+  });
+});
+import zhCn from "element-plus/dist/locale/zh-cn.mjs";
+zhCn.el.pagination = {
+  goto: "跳转至",
+  pageClassifier: "",
+  pagesize: "",
+  total: "共 {total} 条",
 };
 </script>
 <template>
@@ -98,23 +127,56 @@ const changeName = (item) => {
               :data="qualityList"
               stripe
               style="width: 95%"
-              height="160"
+              height="500"
+              :default-sort="{
+                prop: 'Township,SectionName,RiverName,Date',
+                order: 'descending',
+              }"
             >
-              <el-table-column prop="Date" label="时间">
-                <!-- <template #default="{ row }">
-            {{ row.Year }}/0{{ row.Quarter }}
-          </template> -->
-              </el-table-column>
+              <el-table-column type="selection" width="55" />
+              <el-table-column
+                prop="Township"
+                label="镇区"
+                sortable
+                width="90"
+              />
+              <el-table-column
+                prop="SectionName"
+                label="断面名称"
+                sortable
+                width="110"
+              />
+              <el-table-column
+                prop="RiverName"
+                label="河流名称"
+                sortable
+                width="110"
+              />
+              <el-table-column prop="Date" label="日期" sortable width="90" />
+
               <el-table-column prop="AmmoniaNitrogen" label="氨氮(mg/l)" />
               <el-table-column prop="TotalPhosphorus" label="总磷(mg/l)" />
               <el-table-column
                 prop="PermanganateIndex"
                 label="高锰酸盐(mg/l)"
-                width="162"
+                width="130px"
               />
-              <el-table-column prop="DissolvedOxygen" label="溶解氧(mg/l)" />
+              <el-table-column
+                prop="DissolvedOxygen"
+                label="溶解氧(mg/l)"
+                width="130px"
+              />
               <el-table-column prop="ComplianceStatus" label="达标情况" />
             </el-table>
+            <el-config-provider :locale="$commonLang('customPagination')">
+              <el-pagination
+                small
+                :hide-on-single-page="true"
+                background
+                layout="prev, pager, next,total"
+                :total="100"
+              />
+            </el-config-provider>
           </el-main>
         </el-container>
       </el-main>

@@ -40,6 +40,9 @@ export async function getQualityList(
           DissolvedOxygenStandard: 5,
         };
       });
+      qualityList.sort((a, b) => {
+        return a.id - b.id;
+      });
     });
 
   // 处理响应结果

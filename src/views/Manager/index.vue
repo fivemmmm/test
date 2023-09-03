@@ -1,6 +1,6 @@
 <script setup>
 import LayoutHeader from "../Layout/components/LayoutHeader.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { exportDictValue } from "@/composables/exportDictValue";
 
 const radio1 = ref("行政区划");
@@ -50,7 +50,13 @@ const getRiver = async () => {
 const activeName = ref("");
 const changeName = (item) => {
   activeName.value = item;
-  console.log(activeName);
+  if (radio1.value === "行政区划") {
+    getQuality(item);
+  } else if (radio1.value === "断面名称") {
+    getQuality(null, item);
+  } else if (radio1.value === "河流名称") {
+    getQuality(null, null, item);
+  }
 };
 
 import { getQualityList } from "@/stores/getQualityList";
@@ -59,32 +65,140 @@ const getQuality = async (
   townshipName,
   activeSectionName,
   activeRiverName,
-  year
+  year,
+  quarter
 ) => {
   let res = await getQualityList(
     townshipName,
     activeSectionName,
     activeRiverName,
-    year
-  );
+    year,
+    quarter
+  ).then((result) => {
+    const res = result;
+    qualityList.value = res.qualityList;
+    console.log(res);
+  });
   return res;
 };
 
 const qualityList = ref([]);
 onMounted(() => {
   changeActiveList(radio1.value);
-  getQuality().then((result) => {
-    const res = result;
-    qualityList.value = res.qualityList;
-  });
+  getQuality();
+  // getQuality().then((result) => {
+  //   const res = result;
+  //   qualityList.value = res.qualityList;
+  // });
 });
-import zhCn from "element-plus/dist/locale/zh-cn.mjs";
-zhCn.el.pagination = {
-  goto: "跳转至",
-  pageClassifier: "",
-  pagesize: "",
-  total: "共 {total} 条",
+
+// 右边工具栏
+const year = ref("");
+const optionsOfYear = [
+  {
+    value: null,
+    label: "全部年份",
+  },
+  {
+    value: 2016,
+    label: "2016",
+  },
+  {
+    value: 2017,
+    label: "2017",
+  },
+  {
+    value: 2018,
+    label: "2018",
+  },
+  {
+    value: 2019,
+    label: "2019",
+  },
+];
+const quarter = ref("");
+const optionsOfQuarter = [
+  {
+    value: null,
+    label: "全部季度",
+  },
+  {
+    value: 1,
+    label: "第一季度",
+  },
+  {
+    value: 2,
+    label: "第二季度",
+  },
+  {
+    value: 3,
+    label: "第三季度",
+  },
+  {
+    value: 4,
+    label: "第四季度",
+  },
+];
+
+const reset = () => {
+  getQuality(), (year.value = "");
+  quarter.value = "";
 };
+
+const handleEdit = (row) => {
+  (form.id = row.id),
+    (form.AmmoniaNitrogen = row.AmmoniaNitrogen),
+    (form.ComplianceStatus = row.ComplianceStatus),
+    (form.Date = row.Date),
+    (form.DissolvedOxygen = row.DissolvedOxygen),
+    (form.PermanganateIndex = row.PermanganateIndex),
+    (form.RiverName = row.RiverName),
+    (form.SectionName = row.SectionName),
+    (form.TotalPhosphorus = row.TotalPhosphorus),
+    (form.Township = row.Township),
+    console.log(form);
+};
+
+const dialogVisible = ref(false);
+const form = reactive({});
+
+import { updateQualityList } from "@/apis/update";
+const update = () => {
+  debugger;
+  updateQualityList(form).then(() => {
+    console.log(radio1.value);
+    if (activeName.value === "") {
+      getQuality();
+    } else {
+      if (radio1.value === "行政区划") {
+        getQuality(activeName.value);
+      } else if (radio1.value === "断面名称") {
+        getQuality(null, activeName.value).then((result) => {
+          const res = result;
+          qualityList.value = res.qualityList;
+        });
+      } else if (radio1.value === "河流名称") {
+        getQuality(null, null, activeName.value).then((result) => {
+          const res = result;
+          qualityList.value = res.qualityList;
+        });
+      }
+    }
+  });
+};
+
+const currentPage = ref(1);
+const pageSize = 12;
+
+const handleCurrentChange = (val) => {
+  currentPage.value = val;
+};
+
+import { ElConfigProvider } from "element-plus";
+
+import zhCn from "element-plus/dist/locale/zh-cn.mjs";
+
+const locale = zhCn;
 </script>
 <template>
   <LayoutHeader />
@@ -119,21 +233,68 @@ zhCn.el.pagination = {
         </div>
       </el-aside>
       <el-main>
+        <!-- 右侧工具栏 -->
         <el-container>
-          <el-header>Header</el-header>
-          <el-main
-            ><el-table
+          <!-- 右侧头部 -->
+          <el-header
+            >Header
+            <el-select v-model="year" class="m-2" placeholder="监测年份">
+              <el-option
+                v-for="item in optionsOfYear"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+                @click="
+                  getQuality(
+                    townshipName,
+                    activeSectionName,
+                    activeRiverName,
+                    year
+                  )
+                "
+              />
+            </el-select>
+            <el-select v-model="quarter" class="m-2" placeholder="监测季度">
+              <el-option
+                v-for="item in optionsOfQuarter"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+                @click="
+                  getQuality(
+                    townshipName,
+                    activeSectionName,
+                    activeRiverName,
+                    year,
+                    quarter
+                  )
+                "
+              />
+            </el-select>
+            <el-button class="reset" type="primary" plain @click="reset()"
+              >重置</el-button
+            >
+            <el-button type="primary">查询</el-button>
+          </el-header>
+          <!-- 右侧主体 -->
+          <el-main>
+            <el-table
               id="table"
-              :data="qualityList"
+              :data="
+                qualityList.slice(
+                  (currentPage - 1) * pageSize,
+                  currentPage * pageSize
+                )
+              "
               stripe
-              style="width: 95%"
-              height="500"
+              style="width: 97%"
+              height="546"
               :default-sort="{
                 prop: 'Township,SectionName,RiverName,Date',
                 order: 'descending',
               }"
             >
-              <el-table-column type="selection" width="55" />
+              <el-table-column type="selection" width="30" />
               <el-table-column
                 prop="Township"
                 label="镇区"
@@ -167,14 +328,79 @@ zhCn.el.pagination = {
                 width="130px"
               />
               <el-table-column prop="ComplianceStatus" label="达标情况" />
+              <el-table-column label="操作" width="72">
+                <template #default="scope">
+                  <el-button
+                    size="small"
+                    @click="handleEdit(scope.row), (dialogVisible = true)"
+                    >编辑
+                  </el-button>
+                </template>
+              </el-table-column>
             </el-table>
-            <el-config-provider :locale="$commonLang('customPagination')">
+            <el-dialog v-model="dialogVisible" title="更新数据" width="70%">
+              <el-form
+                :inline="true"
+                :model="form"
+                label-width="50px"
+                label-position="top"
+                size="small"
+              >
+                <el-form-item label="序号">
+                  <el-input v-model="form.id" disabled />
+                </el-form-item>
+                <el-form-item label="镇区">
+                  <el-input v-model="form.Township" />
+                </el-form-item>
+                <el-form-item label="断面名称">
+                  <el-input v-model="form.SectionName" />
+                </el-form-item>
+                <el-form-item label="河流名称">
+                  <el-input v-model="form.RiverName" />
+                </el-form-item>
+                <el-form-item label="日期">
+                  <el-input v-model="form.Date" disabled />
+                </el-form-item>
+                <el-form-item label="氨氮(mg/l)">
+                  <el-input v-model="form.AmmoniaNitrogen" />
+                </el-form-item>
+                <el-form-item label="总磷(mg/l)">
+                  <el-input v-model="form.TotalPhosphorus" />
+                </el-form-item>
+                <el-form-item label="高猛酸盐(mg/l)">
+                  <el-input v-model="form.PermanganateIndex" />
+                </el-form-item>
+                <el-form-item label="溶解氧(mg/l)">
+                  <el-input v-model="form.DissolvedOxygen" />
+                </el-form-item>
+                <el-form-item label="达标情况">
+                  <el-input v-model="form.ComplianceStatus" />
+                </el-form-item>
+              </el-form>
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="dialogVisible = false">取消</el-button>
+                  <el-button
+                    class="confirm-button"
+                    type="primary"
+                    @click="(dialogVisible = false), update()"
+                  >
+                    确认
+                  </el-button>
+                </span>
+              </template>
+            </el-dialog>
+            <!-- 分页 -->
+            <el-config-provider :locale="locale">
               <el-pagination
+                @current-change="handleCurrentChange"
                 small
-                :hide-on-single-page="true"
+                :pager-count="5"
                 background
-                layout="prev, pager, next,total"
-                :total="100"
+                :current-page="currentPage"
+                :page-size="pageSize"
+                layout="total,prev, pager, next"
+                :total="qualityList.length"
               />
             </el-config-provider>
           </el-main>
@@ -199,7 +425,7 @@ zhCn.el.pagination = {
     border-radius: 35px;
     border: 1px solid #bbbbbb;
 
-    margin: 37px 18px 0;
+    margin: 37px 10px 0;
 
     display: flex;
     flex-direction: column;
@@ -241,8 +467,21 @@ zhCn.el.pagination = {
     height: 720px;
     border-radius: 35px;
 
-    margin: 37px 18px 0 0;
+    margin: 37px 10px 0 0;
     padding: 0;
+    .el-header {
+      .el-select {
+        width: 114px;
+      }
+      .el-button {
+        background: #409eff;
+      }
+      .reset {
+        background: #ecf5ff;
+        border-color: #a0cfff;
+        color: #409eff;
+      }
+    }
     .el-main {
       height: 658px;
       width: 100%;
@@ -253,6 +492,27 @@ zhCn.el.pagination = {
 
       .el-table {
         margin: 20px auto;
+        .el-button {
+          background: #fff;
+          border-color: #cbcbcd;
+          color: #505255;
+
+          :hover {
+            background: #ecf5ff;
+            border-color: #a0cfff;
+            color: #409eff;
+          }
+        }
+      }
+
+      .el-dialog {
+        .confirm-button {
+          background-color: #409eff;
+        }
+      }
+      .el-pagination {
+        margin: 20px 20px 0 0;
+        float: right;
       }
     }
   }

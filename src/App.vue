@@ -1,70 +1,8 @@
-<script setup>
-// import * as echarts from "echarts";
-// import { ref } from "vue";
-
-// import { getQualityList } from "./stores/getQualityList";
-
-// const option = ref({
-//   legend: {
-//     formatter: function (name) {
-//       if (name === "AmmoniaNitrogen") {
-//         return "氨氮(mg/l)";
-//       } else if (name === "TotalPhosphorus") {
-//         return "总磷(mg/l)";
-//       } else if (name === "PermanganateIndex") {
-//         return "高锰酸钾(mg/l)";
-//       } else if (name === "DissolvedOxygen") {
-//         return "溶解氧(mg/l)";
-//       }
-//       return name; // 其他键名保持不变
-//     },
-//   },
-//   tooltip: {},
-//   dataset: {
-//     dimensions: [
-//       "Date",
-//       "AmmoniaNitrogen",
-//       "TotalPhosphorus",
-//       "PermanganateIndex",
-//       "DissolvedOxygen",
-//     ],
-//     source: [],
-//   },
-//   xAxis: {
-//     type: "category",
-//   },
-//   yAxis: {},
-//   series: [
-//     { type: "line" },
-//     { type: "line" },
-//     { type: "line" },
-//     { type: "line" },
-//   ],
-// });
-// const getQuality = async () => {
-//   const res = await getQualityList("上兴镇", "库中", "竹林水库");
-//   const qualityList = res.qualityList;
-//   console.log(qualityList);
-
-//   console.log("source.value", option.value.dataset.source);
-//   option.value.dataset.source = qualityList;
-//   getline(option);
-//   console.log("source.value", option.value.dataset.source);
-// };
-
-// const getline = (option) => {
-//   const chartDom = document.getElementById("main");
-//   const myChars = echarts.init(chartDom);
-//   console.log("option", option);
-//   myChars.setOption(option.value);
-// };
-</script>
+<script setup></script>
 
 <template>
   <!-- 一级路由出口组件 -->
   <RouterView />
-  <!-- <div class="button1" @click="getQuality(), getline()">点</div> -->
-  <!-- <div id="main" style="width: 963px; height: 300px"></div> -->
 </template>
 
 <style scoped lang="scss">

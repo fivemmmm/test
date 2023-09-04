@@ -1,4 +1,9 @@
-<script setup></script>
+<script setup>
+import { addQualityList } from "@/apis/add.js";
+import { onMounted } from "vue";
+
+onMounted(() => addQualityList());
+</script>
 
 <template>
   <!-- 一级路由出口组件 -->

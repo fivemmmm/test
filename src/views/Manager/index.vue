@@ -51,11 +51,11 @@ const activeName = ref("");
 const changeName = (item) => {
   activeName.value = item;
   if (radio1.value === "行政区划") {
-    getQuality(item);
+    getQuality(item, null, null, year.value);
   } else if (radio1.value === "断面名称") {
-    getQuality(null, item);
+    getQuality(null, item, null, year.value);
   } else if (radio1.value === "河流名称") {
-    getQuality(null, null, item);
+    getQuality(null, null, item, year.value);
   }
 };
 
@@ -93,7 +93,7 @@ onMounted(() => {
 });
 
 // 右边工具栏
-const year = ref("");
+const year = ref(null);
 const optionsOfYear = [
   {
     value: null,
@@ -116,7 +116,7 @@ const optionsOfYear = [
     label: "2019",
   },
 ];
-const quarter = ref("");
+const quarter = ref(null);
 const optionsOfQuarter = [
   {
     value: null,
@@ -140,10 +140,40 @@ const optionsOfQuarter = [
   },
 ];
 
-const reset = () => {
-  getQuality(), (year.value = "");
-  quarter.value = "";
+const getQualityFromYear = (year) => {
+  if (activeName.value === "") {
+    getQuality(null, null, null, year);
+  } else {
+    if (radio1.value === "行政区划") {
+      getQuality(activeName.value, null, null, year);
+    } else if (radio1.value === "断面名称") {
+      getQuality(null, activeName.value, null, year);
+    } else if (radio1.value === "河流名称") {
+      getQuality(null, null, activeName.value, year);
+    }
+  }
 };
+
+const getQualityFromQuarter = (quarter) => {
+  if (activeName.value === "") {
+    getQuality(null, null, null, year.value, quarter);
+  } else {
+    if (radio1.value === "行政区划") {
+      getQuality(activeName.value, null, null, year.value, quarter);
+    } else if (radio1.value === "断面名称") {
+      getQuality(null, activeName.value, null, year.value, quarter);
+    } else if (radio1.value === "河流名称") {
+      getQuality(null, null, activeName.value, year.value, quarter);
+    }
+  }
+};
+
+const reset = () => {
+  getQuality(), (year.value = null);
+  quarter.value = null;
+  activeName.value = null;
+};
+const dialogVisible2 = ref(false);
 
 const handleEdit = (row) => {
   (form.id = row.id),
@@ -164,24 +194,16 @@ const form = reactive({});
 
 import { updateQualityList } from "@/apis/update";
 const update = () => {
-  debugger;
   updateQualityList(form).then(() => {
-    console.log(radio1.value);
     if (activeName.value === "") {
-      getQuality();
+      getQuality(null, null, null, year.value, quarter.value);
     } else {
       if (radio1.value === "行政区划") {
-        getQuality(activeName.value);
+        getQuality(activeName.value, null, null, year.value, quarter.value);
       } else if (radio1.value === "断面名称") {
-        getQuality(null, activeName.value).then((result) => {
-          const res = result;
-          qualityList.value = res.qualityList;
-        });
+        getQuality(null, activeName.value, null, year.value, quarter.value);
       } else if (radio1.value === "河流名称") {
-        getQuality(null, null, activeName.value).then((result) => {
-          const res = result;
-          qualityList.value = res.qualityList;
-        });
+        getQuality(null, null, activeName.value, year.value, quarter.value);
       }
     }
   });
@@ -244,14 +266,7 @@ const locale = zhCn;
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-                @click="
-                  getQuality(
-                    townshipName,
-                    activeSectionName,
-                    activeRiverName,
-                    year
-                  )
-                "
+                @click="getQualityFromYear(year)"
               />
             </el-select>
             <el-select v-model="quarter" class="m-2" placeholder="监测季度">
@@ -260,21 +275,71 @@ const locale = zhCn;
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-                @click="
-                  getQuality(
-                    townshipName,
-                    activeSectionName,
-                    activeRiverName,
-                    year,
-                    quarter
-                  )
-                "
+                @click="getQualityFromQuarter(quarter)"
               />
             </el-select>
             <el-button class="reset" type="primary" plain @click="reset()"
               >重置</el-button
             >
             <el-button type="primary">查询</el-button>
+            <el-button type="primary" @click="dialogVisible2 = true"
+              >增加</el-button
+            >
+            <el-dialog v-model="dialogVisible2" title="添加数据" width="70%">
+              <el-form
+                :inline="true"
+                :model="form"
+                label-width="50px"
+                label-position="top"
+                size="small"
+              >
+                <el-form-item label="序号">
+                  <el-input v-model="form.id" disabled />
+                </el-form-item>
+                <el-form-item label="镇区">
+                  <el-input v-model="form.Township" />
+                </el-form-item>
+                <el-form-item label="断面名称">
+                  <el-input v-model="form.SectionName" />
+                </el-form-item>
+                <el-form-item label="河流名称">
+                  <el-input v-model="form.RiverName" />
+                </el-form-item>
+                <el-form-item label="日期">
+                  <el-input v-model="form.Date" disabled />
+                </el-form-item>
+                <el-form-item label="氨氮(mg/l)">
+                  <el-input v-model="form.AmmoniaNitrogen" />
+                </el-form-item>
+                <el-form-item label="总磷(mg/l)">
+                  <el-input v-model="form.TotalPhosphorus" />
+                </el-form-item>
+                <el-form-item label="高猛酸盐(mg/l)">
+                  <el-input v-model="form.PermanganateIndex" />
+                </el-form-item>
+                <el-form-item label="溶解氧(mg/l)">
+                  <el-input v-model="form.DissolvedOxygen" />
+                </el-form-item>
+                <el-form-item label="达标情况">
+                  <el-input v-model="form.ComplianceStatus" />
+                </el-form-item>
+              </el-form>
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button class="cancel" @click="dialogVisible2 = false"
+                    >取消</el-button
+                  >
+                  <el-button
+                    class="confirm-button"
+                    type="primary"
+                    @click="dialogVisible2 = false"
+                  >
+                    确认
+                  </el-button>
+                </span>
+              </template>
+            </el-dialog>
+            <el-button class="danger" type="danger">删除</el-button>
           </el-header>
           <!-- 右侧主体 -->
           <el-main>
@@ -480,6 +545,23 @@ const locale = zhCn;
         background: #ecf5ff;
         border-color: #a0cfff;
         color: #409eff;
+      }
+      .el-dialog {
+        .cancel {
+          background: #fff;
+          color: #000;
+
+          :hover {
+            background: #ecf5ff;
+            border-color: #a0cfff;
+            color: #409eff;
+          }
+        }
+      }
+
+      .danger {
+        background: #f56c6c;
+        color: #fff;
       }
     }
     .el-main {

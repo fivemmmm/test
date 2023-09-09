@@ -16,6 +16,7 @@ const changeActiveList = () => {
     const getFunction = eval(selectedOption);
     getFunction().then((list) => {
       activeList.value = list;
+      console.log(activeList.value);
     });
   }
 };
@@ -34,6 +35,7 @@ const getSection = async () => {
   const res = await getSectionList();
   return exportDictValue(res.sectionList, "SectionName").then((result) => {
     const sectionList = result.dictList;
+
     return sectionList;
   });
 };
@@ -172,9 +174,81 @@ const reset = () => {
   getQuality(), (year.value = null);
   quarter.value = null;
   activeName.value = null;
+  Quarter;
 };
-const dialogVisible2 = ref(false);
 
+const dialogVisible2 = ref(false);
+// 添加数据
+const addForm = reactive({
+  AmmoniaNitrogen: "",
+  ComplianceStatus: "",
+  DissolvedOxygen: "",
+  PermanganateIndex: "",
+  RiverName: "",
+  SectionName: "",
+  TotalPhosphorus: "",
+  Township: "",
+  Quarter: "",
+  Year: "",
+});
+const getQualityListLastId = () => {
+  getQualityList().then((result) => {
+    const qualityListLastId =
+      result.qualityList[result.qualityList.length - 1].id;
+    addForm.id = qualityListLastId + 1;
+    dialogVisible2.value = true;
+  });
+};
+
+import { addQualityList } from "@/apis/add";
+const add = () => {
+  console.log(addForm);
+  addQualityList(addForm).then(() => {
+    if (activeName.value === "") {
+      getQuality(null, null, null, year.value, quarter.value);
+    } else {
+      if (radio1.value === "行政区划") {
+        getQuality(activeName.value, null, null, year.value, quarter.value);
+      } else if (radio1.value === "断面名称") {
+        getQuality(null, activeName.value, null, year.value, quarter.value);
+      } else if (radio1.value === "河流名称") {
+        getQuality(null, null, activeName.value, year.value, quarter.value);
+      }
+    }
+    changeActiveList();
+  });
+};
+
+//删除数据
+import { deleteQualityList } from "@/apis/delete.js";
+
+let dataonLineListSelections = [];
+const selectionLineChangeHandle = (val) => {
+  dataonLineListSelections = [];
+  for (let i = 0; i < val.length; i++) {
+    dataonLineListSelections.push(val[i].id);
+  }
+  console.log(dataonLineListSelections);
+};
+
+const deleteSelected = () => {
+  deleteQualityList(dataonLineListSelections).then(() => {
+    if (activeName.value === "") {
+      getQuality(null, null, null, year.value, quarter.value);
+    } else {
+      if (radio1.value === "行政区划") {
+        getQuality(activeName.value, null, null, year.value, quarter.value);
+      } else if (radio1.value === "断面名称") {
+        getQuality(null, activeName.value, null, year.value, quarter.value);
+      } else if (radio1.value === "河流名称") {
+        getQuality(null, null, activeName.value, year.value, quarter.value);
+      }
+    }
+    changeActiveList();
+  });
+};
+
+// 更新数据
 const handleEdit = (row) => {
   (form.id = row.id),
     (form.AmmoniaNitrogen = row.AmmoniaNitrogen),
@@ -206,6 +280,7 @@ const update = () => {
         getQuality(null, null, activeName.value, year.value, quarter.value);
       }
     }
+    changeActiveList();
   });
 };
 
@@ -224,7 +299,6 @@ const locale = zhCn;
 </script>
 <template>
   <LayoutHeader />
-
   <div class="common-layout">
     <el-container>
       <el-aside>
@@ -258,88 +332,100 @@ const locale = zhCn;
         <!-- 右侧工具栏 -->
         <el-container>
           <!-- 右侧头部 -->
-          <el-header
-            >Header
-            <el-select v-model="year" class="m-2" placeholder="监测年份">
-              <el-option
-                v-for="item in optionsOfYear"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                @click="getQualityFromYear(year)"
-              />
-            </el-select>
-            <el-select v-model="quarter" class="m-2" placeholder="监测季度">
-              <el-option
-                v-for="item in optionsOfQuarter"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                @click="getQualityFromQuarter(quarter)"
-              />
-            </el-select>
-            <el-button class="reset" type="primary" plain @click="reset()"
-              >重置</el-button
-            >
-            <el-button type="primary">查询</el-button>
-            <el-button type="primary" @click="dialogVisible2 = true"
-              >增加</el-button
-            >
-            <el-dialog v-model="dialogVisible2" title="添加数据" width="70%">
-              <el-form
-                :inline="true"
-                :model="form"
-                label-width="50px"
-                label-position="top"
-                size="small"
+          <el-header>
+            <div>
+              <el-select v-model="year" class="m-2" placeholder="监测年份">
+                <el-option
+                  v-for="item in optionsOfYear"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                  @click="getQualityFromYear(year)"
+                />
+              </el-select>
+              <el-select v-model="quarter" class="m-2" placeholder="监测季度">
+                <el-option
+                  v-for="item in optionsOfQuarter"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                  @click="getQualityFromQuarter(quarter)"
+                />
+              </el-select>
+              <el-button class="reset" type="primary" plain @click="reset()"
+                >重置</el-button
               >
-                <el-form-item label="序号">
-                  <el-input v-model="form.id" disabled />
-                </el-form-item>
-                <el-form-item label="镇区">
-                  <el-input v-model="form.Township" />
-                </el-form-item>
-                <el-form-item label="断面名称">
-                  <el-input v-model="form.SectionName" />
-                </el-form-item>
-                <el-form-item label="河流名称">
-                  <el-input v-model="form.RiverName" />
-                </el-form-item>
-                <el-form-item label="日期">
-                  <el-input v-model="form.Date" disabled />
-                </el-form-item>
-                <el-form-item label="氨氮(mg/l)">
-                  <el-input v-model="form.AmmoniaNitrogen" />
-                </el-form-item>
-                <el-form-item label="总磷(mg/l)">
-                  <el-input v-model="form.TotalPhosphorus" />
-                </el-form-item>
-                <el-form-item label="高猛酸盐(mg/l)">
-                  <el-input v-model="form.PermanganateIndex" />
-                </el-form-item>
-                <el-form-item label="溶解氧(mg/l)">
-                  <el-input v-model="form.DissolvedOxygen" />
-                </el-form-item>
-                <el-form-item label="达标情况">
-                  <el-input v-model="form.ComplianceStatus" />
-                </el-form-item>
-              </el-form>
-              <template #footer>
-                <span class="dialog-footer">
-                  <el-button class="cancel" @click="dialogVisible2 = false"
-                    >取消</el-button
-                  >
-                  <el-button
-                    class="confirm-button"
-                    type="primary"
-                    @click="dialogVisible2 = false"
-                  >
-                    确认
-                  </el-button>
-                </span>
-              </template>
-            </el-dialog>
-            <el-button class="danger" type="danger">删除</el-button>
+              <el-button type="primary">查询</el-button>
+            </div>
+            <div>
+              <el-button type="primary" @click="getQualityListLastId()">
+                增加
+              </el-button>
+              <el-dialog v-model="dialogVisible2" title="添加数据" width="70%">
+                <el-form
+                  :inline="true"
+                  :model="addForm"
+                  label-width="50px"
+                  label-position="top"
+                  size="small"
+                >
+                  <el-form-item label="镇区">
+                    <el-input v-model="addForm.Township" />
+                  </el-form-item>
+                  <el-form-item label="断面名称">
+                    <el-input v-model="addForm.SectionName" />
+                  </el-form-item>
+                  <el-form-item label="河流名称">
+                    <el-input v-model="addForm.RiverName" />
+                  </el-form-item>
+                  <el-form-item label="年份">
+                    <el-input v-model="addForm.Year" />
+                  </el-form-item>
+                  <el-form-item label="季度">
+                    <el-input v-model="addForm.Quarter" />
+                  </el-form-item>
+                  <el-form-item label="氨氮(mg/l)">
+                    <el-input v-model="addForm.AmmoniaNitrogen" />
+                  </el-form-item>
+                  <el-form-item label="总磷(mg/l)">
+                    <el-input v-model="addForm.TotalPhosphorus" />
+                  </el-form-item>
+                  <el-form-item label="高猛酸盐(mg/l)">
+                    <el-input v-model="addForm.PermanganateIndex" />
+                  </el-form-item>
+                  <el-form-item label="溶解氧(mg/l)">
+                    <el-input v-model="addForm.DissolvedOxygen" />
+                  </el-form-item>
+                  <el-form-item label="达标情况">
+                    <el-input v-model="addForm.ComplianceStatus" />
+                  </el-form-item>
+                </el-form>
+                <template #footer>
+                  <span class="dialog-footer">
+                    <el-button class="cancel" @click="dialogVisible2 = false"
+                      >取消</el-button
+                    >
+                    <el-button
+                      class="confirm-button"
+                      type="primary"
+                      @click="
+                        dialogVisible2 = false;
+                        add();
+                      "
+                    >
+                      确认
+                    </el-button>
+                  </span>
+                </template>
+              </el-dialog>
+              <el-button
+                :plain="true"
+                class="danger"
+                type="danger"
+                @click="deleteSelected()"
+                >删除</el-button
+              >
+            </div>
           </el-header>
           <!-- 右侧主体 -->
           <el-main>
@@ -358,6 +444,7 @@ const locale = zhCn;
                 prop: 'Township,SectionName,RiverName,Date',
                 order: 'descending',
               }"
+              @selection-change="selectionLineChangeHandle"
             >
               <el-table-column type="selection" width="30" />
               <el-table-column
@@ -535,11 +622,21 @@ const locale = zhCn;
     margin: 37px 10px 0 0;
     padding: 0;
     .el-header {
+      display: flex;
+      justify-content: space-between;
       .el-select {
         width: 114px;
+        margin-left: 15px;
+      }
+      .el-select:first-child {
+        margin-left: 0px;
       }
       .el-button {
         background: #409eff;
+        margin-left: 15px;
+      }
+      .el-button:last-child {
+        margin-right: 15px;
       }
       .reset {
         background: #ecf5ff;
@@ -556,6 +653,10 @@ const locale = zhCn;
             border-color: #a0cfff;
             color: #409eff;
           }
+        }
+
+        .el-button:last-child {
+          margin-right: 0;
         }
       }
 

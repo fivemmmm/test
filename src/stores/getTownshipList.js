@@ -1,16 +1,19 @@
 import axios from "axios";
 
 const arr1 = [];
+
 export async function getTownshipList() {
   // const sectionList = ref([]);
   const queryParams = {};
 
+  let townshipList = [];
   // 发送GET请求并保存结果
   const response = await axios.get("http://localhost:3000/cat", {
     params: queryParams,
   });
   // 处理响应结果
   const res = response.data; // 将响应数据保存在变量中
+  console.log();
   //   这里您可以对结果进行其他处理或存储操作;
   for (let i = 0; i < res.data.length; i++) {
     arr1.push({
@@ -23,7 +26,8 @@ export async function getTownshipList() {
       (arr) => !res.has(arr.Township) && res.set(arr.Township, 1)
     );
   };
-  let townshipList = unique(arr1);
+  townshipList = unique(arr1);
+  debugger;
   return {
     townshipList,
   };

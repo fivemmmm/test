@@ -1,8 +1,8 @@
 <script setup>
-import { addQualityList } from "@/apis/add.js";
-import { onMounted } from "vue";
+// import { deleteQualityList } from "@/apis/delete.js";
+// import { onMounted } from "vue";
 
-onMounted(() => addQualityList());
+// onMounted(() => deleteQualityList([1]));
 </script>
 
 <template>

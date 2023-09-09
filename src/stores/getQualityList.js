@@ -27,7 +27,7 @@ export async function getQualityList(
       params: queryParams,
     })
     .then((res) => {
-      console.log(queryParams);
+      console.log("queryParams", queryParams);
       qualityList = res.data.data;
       qualityList = res.data.data.map((item) => {
         // Add a new key-value pair to each item
